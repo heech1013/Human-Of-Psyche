@@ -1,0 +1,11 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+    body
+        div
+            h3 인터뷰 사진 등록 (id: #{id})
+            form(action='/interviews/'+ id +'/photo' method='post' enctype='multipart/form-data')
+                input(type='file' name='input_file')
+                input(type='submit' value='등록')
+//- interview 데이터의 column의 id값을 전달받아, S3에 id를 파일명으로 갖는 사진파일 저장

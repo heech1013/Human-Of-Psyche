@@ -1,0 +1,21 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title HOP: Human Of Psyche
+    body
+        div
+            | 저희 HOP는 찍고, 질문하고, 듣습니다. 여러분들만의 ‘이야기’를요.
+            a(href='/about') HOP의 이야기 더 들어보기
+        div
+            if(auth)
+                a(href='/interviews/new') 인터뷰 추가하기
+        div
+            each i in Contents
+                a(href='/interviews/'+Contents[i].Key)
+                    <img src='https://s3.ap-northeast-2.amazonaws.com/human-of-psyche/'+ Contents[i].Key>
+                if(auth)
+                    a(href='/interviews/'+ Contents[i].Key +'/edit') 수정
+                    a(href='/interviews/'+ Contents[i].Key +'/delete') 삭제
+        div
+            a(href='/login') 관리자 로그인

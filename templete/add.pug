@@ -1,0 +1,22 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+    body
+        div
+            form(action='/interviews/new' method='post')
+                p
+                  h3 인터뷰 타이틀
+                  input(type='text' name='title' placeholder='인터뷰 타이틀')
+                p
+                  h3 인터뷰 날짜
+                  input(type='text' name='date' placeholder='YYYY년 MM월 DD일')
+                p
+                  h3 인터뷰 내용
+                  textarea(name='body' placeholder='인터뷰 내용')
+                p
+                  input(type='submit' value='작성')
+//- 인터뷰 추가 프로세스: RDS(mysql)에 인터뷰 text 데이터만 먼저 추가한다.
+//- interview의 column을 추가하면 저절로 부여되는 id값(AI, PK)을 전달 받아서
+//- 사진파일을 등록할 때 사진파일의 이름을 해당 인터뷰 데이터의 id값으로 전달함으로써
+//- 인터뷰와 사진을 동일한 id값으로 연결한다.
