@@ -12,14 +12,16 @@ const AWS = require('aws-sdk');
 const formidable = require('formidable');  // 파일 업로드 모듈
 
 const app = express();
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
     secret: 'gmlckddlWkd%(%(',
     resave: false,
     saveUninitialized: true
-}));
+})); 
 app.use(passport.initialize());  // passport 초기화
 app.use(passport.session());  // (session 초기화 뒤쪽에 위치해야 함)
+
 app.set('views', './templete');
 app.set('view engine', 'pug');
 
@@ -36,12 +38,12 @@ const admin = [  // id: admin / pw: 관리자1013
 
 /* RDS sequelize 설정 */
 const sequelize = new Sequelize(  // 나중에 인증 정보를 symbol based operator로 바꾸자
-    'o4',  // 데이터베이스 이름
-    'root',  // 유저 명(RDS:master id)
-    '111111', // 비밀번호(RDS:matser pw)
+    'o2',  // RDS 데이터베이스 이름
+    'heech1013',  // 유저 명(RDS:master id)
+    'gml3413rds', // 비밀번호(RDS:matser pw)
     {
-        'host': 'localhost',  // 데이터베이스 호스트(RDS:endpoint)
-        //'port': 3306,
+        'host': 'human-of-psyche.cuhu0wiij8n2.ap-northeast-2.rds.amazonaws.com',  // 데이터베이스 호스트(RDS:endpoint)
+        'port': 3306,
         'dialect': 'mysql'  // 사용할 데이터베이스 종류  
     }
 );
@@ -72,8 +74,6 @@ const Interview = sequelize.define('interview', {
 const s3 = new AWS.S3();
 AWS.config.region = 'ap-northeast-2';
 
-
-
 /*인터뷰 추가 템플릿 연결 라우터*/
 app.get('interviews/new', (req, res)=>{
     res.render('new');
@@ -92,6 +92,18 @@ app.post('interviews/new', (req, res)=>{
         });
 });
 
+/* 관리자용 인터뷰 수정
+권한 인증과정 구현할 것 */
+app.get('/interviews/:id/edit', (req, res)=>{
+    
+});
+
+/* 관리자용 인터뷰 삭제
+권한 인증과정 구현할 것 */
+app.get('/interviews/:id/delete', (req, res)=>{
+
+});
+
 /*인터뷰 추가 후 사진 등록 템플릿 연결 라우터*/
 app.get('/interviews/:id/photo', (req, res)=>{
     let id = req.params.id;
@@ -106,7 +118,7 @@ app.post('/interviews/:id/photo', (req, res)=>{
         let params = {
             Bucket: 'human-of-psyche', // required: S3 bucket 설정
             Key: id, // required: S3에 저장될 파일 이름 설정. 확장자가 자동으로 추가되는지?(우선 확장자가 없어도 url을 통해 접근할 수는 있다)
-            ACL: 'authenticated-read', // (?) 권한 설정(변경 필요. public으로 하면 안된다.)
+            ACL: 'private', // (?) 권한 설정(변경 필요. public으로 하면 안된다.)
             Body: require('fs').createReadStream(files.input_file.path),  // files(사용자가 업로드한 파일의 정보).input_file(<form>의 input type의 name)
             // form.parse를 통해 파일을 읽어 임시경로(path)에 저장된 상태. 다시 S3에 저장하기 위해 임시경로의 파일을 stream으로 읽는다.
             ContentType: 'image/jpg'  // 저절로 파일이 다운로드 되는 것 방지
@@ -133,7 +145,7 @@ app.post('/interviews/:id/photo', (req, res)=>{
 app.get('/interviews/:id', (req, res)=>{
     let id = req.params.id;
     Interview.findById(id)
-        .then((results)=>{
+        .then((results)=>{  // [{}]: json형식으로 반환하는지 확인 필요
             res.render('interview', {results:results});
         })
         .catch((err)=>{
@@ -141,8 +153,8 @@ app.get('/interviews/:id', (req, res)=>{
         });
 });
 
-/* 관리자용 페이지: 추가, 수정, 삭제 
-   StorageClass: 'REDUCED_REDUNDANCY'로 저장하는 법 강구할 것
+/*
+   - S3의 StorageClass: 'STANDARD'가 아니라 'REDUCED_REDUNDANCY'로 저장하는 법 강구할 것
 */
 /* 메인 페이지(HOP 간단 소개 + 모든 인터뷰 사진 리스트)*/
 app.get('/interviews', (req, res)=>{
@@ -160,9 +172,7 @@ app.get('/interviews', (req, res)=>{
                 res.render('index', {Contents:data.Contents});
             }
         }
-    })
-    
-
+    });
 });
 
 /* HOP 소개 페이지 */
@@ -171,6 +181,7 @@ app.get('/about', (req, res)=>{
 });
 
 
+/* local strategy 함수 */
 passport.serializeUser((user, done)=>{
     done(null, user.username);  // 두번째 인자로 식별자를 전달
 });
@@ -213,7 +224,6 @@ app.post('/login',
     )
 );
 
-
-app.listen(3000, ()=>{
+app.listen(80, ()=>{
     console.log('Connected: 80 port');
 });

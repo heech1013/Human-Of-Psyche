@@ -1,0 +1,14 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title HOP: Human Of Psyche
+    body
+        div 
+            <img src='https://s3.ap-northeast-2.amazonaws.com/human-of-psyche/'+ results[0].id>
+            h2 #{results[0].title}
+            h4 #{results[0].date}
+            h3 #{results[0].body}
+            if(auth)
+                a(href='/interviews/'+ results[0].id +'/edit') 수정
+                a(href='/interviews/'+ results[0].id +'/delete') 삭제
