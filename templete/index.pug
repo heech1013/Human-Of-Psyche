@@ -4,19 +4,23 @@ html
         meta(charset='utf-8')
         title HOP: Human Of Psyche
     body
+        h1 HOP: Human Of Psyche
         div
             | 저희 HOP는 찍고, 질문하고, 듣습니다. 여러분들만의 ‘이야기’를요.
             a(href='/about') HOP의 이야기 더 들어보기
         div
             if(auth)
+				br
                 a(href='/interviews/new') 인터뷰 추가하기
         div
-            each i in Contents
-                a(href='/interviews/'+Contents[i].Key)
-                    <img src='https://s3.ap-northeast-2.amazonaws.com/human-of-psyche/'+ Contents[i].Key>
-                    //- 이렇게 한다고 s3의 이미지에 접근할 수 있는지? s3의 권한(acl)과 url을 통한 이미지 접근에 대해 테스트 필요
-                if(auth)
-                    a(href='/interviews/'+ Contents[i].Key +'/edit') 수정
-                    a(href='/interviews/'+ Contents[i].Key +'/delete') 삭제
-        div
-            a(href='/login') 관리자 로그인
+            each column in results
+                a(href='/interviews/'+ column.dataValues.id)
+                    img(src=column.dataValues.img_src)
+				if(auth)
+					a(href='/interviews/'+ column.dataValues.id + '/edit') 수정/ 
+					a(href='/interviews/'+ column.dataValues.id + '/delete') 삭제
+        div 
+			if(auth)
+				a(href='/logout') 관리자 로그아웃
+			else
+            	a(href='/login') 관리자 로그인
